@@ -10,9 +10,9 @@ import commentRoutes from "./routes/comment-routes.js";
 import authRoutes from "./routes/auth-routes.js";
 
 dotenv.config();
-
 const app = express();
 
+// Parsers
 app.use(cookieParser());
 app.use(express.json());
 
@@ -25,13 +25,14 @@ app.use("/api/comments", commentRoutes);
 // NOT FOUND PAGE
 app.use((req, res) => res.json({ message: "Unfortunately page not found" }));
 
+// ERROR HANDLING
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Something went wrong";
   return res.status(status).json({ message });
 });
 
-// Connection to the database
+// CONNECTION TO THE DATABASE
 mongoose.connect(process.env.MONGODB_URL).then(() => {
   console.log(`Connected to mongodb`);
 
