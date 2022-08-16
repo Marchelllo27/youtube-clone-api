@@ -8,6 +8,7 @@ import userRoutes from "./routes/user-routes.js";
 import videoRoutes from "./routes/video-routes.js";
 import commentRoutes from "./routes/comment-routes.js";
 import authRoutes from "./routes/auth-routes.js";
+import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
 
 dotenv.config();
 const app = express();
@@ -26,11 +27,7 @@ app.use("/api/comments", commentRoutes);
 app.use((req, res) => res.json({ message: "Unfortunately page not found" }));
 
 // ERROR HANDLING
-app.use((err, req, res, next) => {
-  const status = err.status || 500;
-  const message = err.message || "Something went wrong";
-  return res.status(status).json({ message });
-});
+app.use(errorHandlerMiddleware);
 
 // CONNECTION TO THE DATABASE
 mongoose.connect(process.env.MONGODB_URL).then(() => {
