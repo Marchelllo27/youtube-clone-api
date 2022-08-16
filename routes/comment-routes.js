@@ -1,8 +1,15 @@
 import { Router } from "express";
-import { commentController } from "../controllers/comment-controller.js";
+import checkAuth from "../middlewares/checkAuth.js";
+import {
+  addCommentController,
+  deleteCommentController,
+  getAllCommentsController,
+} from "../controllers/comment-controller.js";
 
 const router = Router();
 
-router.get("/", commentController);
+router.post("/", checkAuth, addCommentController);
+router.delete("/:id", checkAuth, deleteCommentController);
+router.get("/:videoId", checkAuth, getAllCommentsController);
 
 export default router;
