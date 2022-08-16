@@ -1,5 +1,6 @@
 import User from "../models/User-model.js";
 import CustomError from "../models/CustomError.js";
+import Video from "../models/Video-model.js";
 
 // UPDATE USER
 export const updateUserController = async (req, res, next) => {
@@ -73,7 +74,9 @@ export const unsubscribeUserController = async (req, res, next) => {
     const userWhichWantsUnSubscribe = await User.findById(req.userData.id);
 
     // check if really subscribed to the channel
-    const userNotSubscribedToThisChannel = userWhichWantsUnSubscribe.subscribedUsers.findIndex(id => id === req.params.id);
+    const userNotSubscribedToThisChannel = userWhichWantsUnSubscribe.subscribedUsers.findIndex(
+      id => id === req.params.id
+    );
     if (userNotSubscribedToThisChannel < 0) return next(new CustomError("User not subscribed to this channel", 400));
 
     userWhichWantsUnSubscribe.subscribedUsers.splice(userNotSubscribedToThisChannel, 1);
@@ -86,12 +89,4 @@ export const unsubscribeUserController = async (req, res, next) => {
     console.log(error);
     return next(new CustomError("Fail to unsubscribe to the channel"));
   }
-};
-
-// LIKES
-export const likeVideoController = async (req, res, next) => {
-  res.json({ message: "It works!" });
-};
-export const dislikeVideoController = async (req, res, next) => {
-  res.json({ message: "It works!" });
 };

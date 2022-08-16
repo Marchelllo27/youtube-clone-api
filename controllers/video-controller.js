@@ -61,6 +61,40 @@ export const deleteVideoController = async (req, res, next) => {
   }
 };
 
+// LIKES
+export const likeVideoController = async (req, res, next) => {
+  const videoId = req.params.videoId;
+  const userId = req.userData.id;
+
+  try {
+    await Video.findByIdAndUpdate(videoId, {
+      $addToSet: { likes: userId }, // make sure we add like once
+      $pull: { dislikes: userId }, // remove userId from dislikes array
+    });
+
+    return res.status(201).json({ message: "The video has been liked" });
+  } catch (error) {
+    return next(new CustomError("Fail to like a video", 400));
+  }
+};
+
+// DISLIKES
+export const dislikeVideoController = async (req, res, next) => {
+  const videoId = req.params.videoId;
+  const userId = req.userData.id;
+
+  try {
+    await Video.findByIdAndUpdate(videoId, {
+      $addToSet: { dislikes: userId }, // make sure we add like once
+      $pull: { likes: userId }, // remove userId from likes array
+    });
+
+    return res.status(201).json({ message: "The video has been disliked" });
+  } catch (error) {
+    return next(new CustomError("Fail to dislike a video", 400));
+  }
+};
+
 // VIEWS
 
 export const addViewController = async (req, res, next) => {

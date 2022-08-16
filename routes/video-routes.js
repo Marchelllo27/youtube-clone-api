@@ -10,6 +10,8 @@ import {
   subscribedVideosController,
   getByTagController,
   searchController,
+  likeVideoController,
+  dislikeVideoController,
 } from "../controllers/video-controller.js";
 import checkAuth from "../middlewares/checkAuth.js";
 
@@ -26,6 +28,12 @@ router.put("/:id", checkAuth, updateVideoController);
 
 // Delete a video
 router.delete("/:id", checkAuth, deleteVideoController);
+
+// like a video
+router.post("/like/:videoId", checkAuth, likeVideoController);
+
+// dislike a video
+router.post("/dislike/:videoId", checkAuth, dislikeVideoController);
 
 // OTHERS
 router.put("/view/:id", addViewController);
