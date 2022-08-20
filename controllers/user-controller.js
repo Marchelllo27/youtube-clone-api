@@ -38,7 +38,7 @@ export const getUserController = async (req, res, next) => {
   const userId = req.params.id;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId, "-password");
 
     if (!user) return next(new CustomError("User with provided id not found"));
     return res.json(user);

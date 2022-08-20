@@ -24,7 +24,7 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/comments", commentRoutes);
 
 // NOT FOUND PAGE
-app.use((req, res) => res.json({ message: "Unfortunately page not found" }));
+app.use((req, res) => res.status(404).json({ message: "Unfortunately page not found" }));
 
 // ERROR HANDLING
 app.use(errorHandlerMiddleware);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signupController, loginController } from "../controllers/auth-controller.js";
+import { signupController, loginController, googleSignupController } from "../controllers/auth-controller.js";
 
 const router = Router();
 
@@ -10,6 +10,6 @@ router.post("/signup", signupController);
 router.post("/login", loginController);
 
 // GOOGLE AUTH
-router.post("/google", signupController);
+router.post("/google", googleSignupController);
 
 export default router;

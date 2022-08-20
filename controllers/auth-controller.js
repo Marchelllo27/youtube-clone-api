@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
 import CustomError from "../models/CustomError.js";
 import User from "../models/User-model.js";
+import { generateToken } from "../utils/generateToken.js";
 
 // REGISTER
 export const signupController = async (req, res, next) => {
@@ -19,8 +18,18 @@ export const signupController = async (req, res, next) => {
 
     // create user
     const newUser = await User.create({ ...req.body, password: hachedPassword });
-    res.json({ message: "User has been created!" });
+    const userWhitoutPassword = { ...newUser._doc, password: null };
+
+    const token = generateToken(userWhitoutPassword._id);
+
+    return res
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json(userWhitoutPassword);
   } catch (error) {
+    console.log(error);
     return next(new CustomError("Something went wrong while creating a user", 400));
   }
 };
@@ -37,20 +46,13 @@ export const loginController = async (req, res, next) => {
 
     // check if password matches
     const passwordMatches = await bcrypt.compare(req.body.password, existingUser.password);
+
     if (!passwordMatches) {
       return next(new CustomError("Password does not match", 401));
     }
 
     // login user with JWT
-    const token = jwt.sign(
-      {
-        id: existingUser._id,
-      },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1h",
-      }
-    );
+    const token = generateToken(existingUser._id);
 
     const { password, ...otherUserInfo } = existingUser._doc;
 
@@ -62,5 +64,37 @@ export const loginController = async (req, res, next) => {
       .json(otherUserInfo);
   } catch (err) {
     return next(new CustomError("User not found", 400));
+  }
+};
+
+// GOOGLE
+export const googleSignupController = async (req, res, next) => {
+  try {
+    // IF USER EXISTS ALREADY
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      // login user with JWT
+      const token = generateToken(user._id);
+
+      return res
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json(user._doc);
+    }
+
+    // CREATE NEW USER
+    const newUser = await User.create({ ...req.body, fromGoogle: true });
+
+    return res
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json(newUser._doc);
+  } catch (error) {
+    console.log(error);
+    return next(new CustomError("Couldn't create an account, please try again.", 400));
   }
 };

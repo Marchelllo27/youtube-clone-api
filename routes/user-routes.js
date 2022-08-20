@@ -17,7 +17,7 @@ router.put("/:id", checkAuth, updateUserController);
 router.delete("/:id", checkAuth, deleteUserController);
 
 // get user
-router.get("/find/:id", checkAuth, getUserController);
+router.get("/find/:id", getUserController);
 
 // subscribe user
 router.put("/sub/:id", checkAuth, subscribeUserController);
