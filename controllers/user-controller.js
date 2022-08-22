@@ -51,10 +51,11 @@ export const getUserController = async (req, res, next) => {
 export const subscribeUserController = async (req, res, next) => {
   try {
     const userWhichWantSubscribe = await User.findById(req.userData.id);
+
     if (!userWhichWantSubscribe) return next(new CustomError("Fail to subscribe this user"));
 
     const isAlreadySubscribedToThisChannel = userWhichWantSubscribe.subscribedUsers.includes(req.params.id);
-    if (isAlreadySubscribedToThisChannel) return next(new CustomError("Already subscribed to this channel"));
+    if (isAlreadySubscribedToThisChannel) return next(new CustomError("Already subscribed to this channel", 400));
 
     userWhichWantSubscribe.subscribedUsers.push(req.params.id);
     userWhichWantSubscribe.save();
@@ -64,6 +65,7 @@ export const subscribeUserController = async (req, res, next) => {
 
     res.json({ message: "Successfully subscribed" });
   } catch (error) {
+    console.log(error);
     return next(new CustomError("Fail to subscribe to the channel"));
   }
 };

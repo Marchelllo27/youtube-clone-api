@@ -23,7 +23,7 @@ export const getAllCommentsController = async (req, res, next) => {
   try {
     const allComments = await Comment.find({ videoId: req.params.videoId });
 
-    if (!allComments || !allComments.length) return next(new CustomError("Couldn't find any comments", 404));
+    if (!allComments) return next(new CustomError("Couldn't find any comments", 404));
 
     return res.json(allComments);
   } catch (error) {
