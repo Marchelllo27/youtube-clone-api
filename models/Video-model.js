@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
+const ObjectId = mongoose.ObjectId;
+
 const options = { timestamps: true, versionKey: false };
 
 const VideoSchema = new mongoose.Schema(
   {
-    userId: { type: String, required: true },
+    userId: { type: ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
     desc: { type: String, required: true },
     imgUrl: { type: String, required: true },

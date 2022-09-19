@@ -24,13 +24,13 @@ export const signupController = async (req, res, next) => {
 
     // create user
     const newUser = await User.create({ ...req.body, password: hachedPassword });
-    const userWhitoutPassword = { ...newUser._doc, password: null };
 
-    const token = generateToken(userWhitoutPassword._id);
+    const { password, ...userWhithoutPassword } = newUser._doc;
+
+    const token = generateToken(userWhithoutPassword._id);
 
     return res.status(201).json({
-      user: userWhitoutPassword,
-      token,
+      user: { token, ...userWhithoutPassword },
     });
   } catch (error) {
     console.log(error);
@@ -66,8 +66,7 @@ export const loginController = async (req, res, next) => {
     const { password, ...otherUserInfo } = existingUser._doc;
 
     res.json({
-      user: { ...otherUserInfo },
-      token,
+      user: { token, ...otherUserInfo },
     });
   } catch (err) {
     return next(new CustomError("Something went wrong while login user. Please try again", 400));

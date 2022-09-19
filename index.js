@@ -22,6 +22,9 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Routes
+app.get("/api", (req, res, next) => {
+  res.json({ message: "Welcome to Youtube Clone API!" });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);

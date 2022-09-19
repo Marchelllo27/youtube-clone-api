@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const ObjectId = mongoose.ObjectId;
+
 const options = { timestamps: true, versionKey: false };
 
 const UserSchema = new mongoose.Schema(
@@ -9,7 +11,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: true },
     img: { type: String },
     subscribers: { type: Number, default: 0 },
-    subscribedUsers: { type: [String], default: [] },
+    subscribedUsers: { type: [ObjectId], default: [] },
     fromGoogle: { type: Boolean, default: false },
   },
   options
