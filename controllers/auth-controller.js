@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { validationResult } from "express-validator";
 
 import CustomError from "../models/CustomError.js";
 import User from "../models/User-model.js";
@@ -6,6 +7,11 @@ import { generateToken } from "../utils/generateToken.js";
 
 // REGISTER
 export const signupController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     // check if user is already registered
     const userExistAlready = await User.findOne({ $or: [{ name: req.body.name }, { email: req.body.email }] });
@@ -22,12 +28,10 @@ export const signupController = async (req, res, next) => {
 
     const token = generateToken(userWhitoutPassword._id);
 
-    return res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json(userWhitoutPassword);
+    return res.status(201).json({
+      user: userWhitoutPassword,
+      token,
+    });
   } catch (error) {
     console.log(error);
     return next(new CustomError("Something went wrong while creating a user", 400));
@@ -36,19 +40,24 @@ export const signupController = async (req, res, next) => {
 
 // LOGIN
 export const loginController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   // check if user exists
   let existingUser;
   try {
     existingUser = await User.findOne({ name: req.body.name });
     if (!existingUser) {
-      return next(new CustomError("Invalid credentials. User not found", 401));
+      return next(new CustomError("Invalid credentials. Please try again", 401));
     }
 
     // check if password matches
     const passwordMatches = await bcrypt.compare(req.body.password, existingUser.password);
 
     if (!passwordMatches) {
-      return next(new CustomError("Password does not match", 401));
+      return next(new CustomError("Invalid credentials. Please try again", 401));
     }
 
     // login user with JWT
@@ -56,14 +65,12 @@ export const loginController = async (req, res, next) => {
 
     const { password, ...otherUserInfo } = existingUser._doc;
 
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json(otherUserInfo);
+    res.json({
+      user: { ...otherUserInfo },
+      token,
+    });
   } catch (err) {
-    return next(new CustomError("User not found", 400));
+    return next(new CustomError("Something went wrong while login user. Please try again", 400));
   }
 };
 
@@ -75,24 +82,23 @@ export const googleSignupController = async (req, res, next) => {
     if (user) {
       // login user with JWT
       const token = generateToken(user._id);
+      const { password, ...userWithoutPassword } = user;
 
-      return res
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .status(200)
-        .json(user._doc);
+      return res.json({
+        user: { ...userWithoutPassword },
+        token,
+      });
     }
 
     // CREATE NEW USER
     const newUser = await User.create({ ...req.body, fromGoogle: true });
 
-    return res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json(newUser._doc);
+    const { password, ...userWithoutPassword } = newUser;
+
+    return res.json({
+      user: { ...userWithoutPassword },
+      token,
+    });
   } catch (error) {
     console.log(error);
     return next(new CustomError("Couldn't create an account, please try again.", 400));

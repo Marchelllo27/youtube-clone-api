@@ -1,6 +1,5 @@
 import User from "../models/User-model.js";
 import CustomError from "../models/CustomError.js";
-import Video from "../models/Video-model.js";
 
 // UPDATE USER
 export const updateUserController = async (req, res, next) => {
@@ -60,7 +59,7 @@ export const subscribeUserController = async (req, res, next) => {
     userWhichWantSubscribe.subscribedUsers.push(req.params.id);
     userWhichWantSubscribe.save();
 
-    // increase subscribers for channel we subscribe toss
+    // increase subscribers for channel we subscribe to
     const userWeSubscribeTo = await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: 1 } });
 
     res.json({ message: "Successfully subscribed" });
@@ -84,7 +83,7 @@ export const unsubscribeUserController = async (req, res, next) => {
     userWhichWantsUnSubscribe.subscribedUsers.splice(userNotSubscribedToThisChannel, 1);
     userWhichWantsUnSubscribe.save();
 
-    const userWeSubscribeTo = await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: -1 } });
+    const userWeUnsubscribe = await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: -1 } });
 
     res.json({ message: "Successfully unsubscribed!" });
   } catch (error) {

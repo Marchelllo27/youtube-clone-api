@@ -17,6 +17,7 @@ export const createVideoController = async (req, res, next) => {
     const savedVideo = await video.save();
     return res.status(201).json(savedVideo);
   } catch (error) {
+    console.log(error);
     return next(new CustomError("Couldn't create a video", 400));
   }
 };
@@ -116,7 +117,7 @@ export const randomVideoController = async (req, res, next) => {
     const videos = await Video.aggregate([{ $sample: { size: 40 } }]);
     return res.json(videos);
   } catch (error) {
-    return next(new CustomError("Couldn't add view", 400));
+    return next(new CustomError("Couldn't find videos", 400));
   }
 };
 
@@ -126,7 +127,7 @@ export const trendVideoController = async (req, res, next) => {
     const videos = await Video.find().sort({ views: -1 });
     return res.json(videos);
   } catch (error) {
-    return next(new CustomError("Couldn't add view", 400));
+    return next(new CustomError("Couldn't find videos", 400));
   }
 };
 
