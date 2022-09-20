@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.autorization?.split(" ")[1] || null;
 
   if (!token) {
     return next(new CustomError("You are not authenticated", 401));
