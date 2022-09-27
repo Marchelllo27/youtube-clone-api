@@ -1,13 +1,21 @@
+import { response } from "express";
+import { validationResult } from "express-validator";
+// EXTRA
 import CustomError from "../models/CustomError.js";
 import User from "../models/User-model.js";
 import Video from "../models/Video-model.js";
 
 // CREATE
 export const createVideoController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const videoExistsAlready = await Video.findOne({ title: req.body.title });
 
-    if (videoExistsAlready) return next(new CustomError("Video already exists", 400));
+    if (videoExistsAlready) return next(new CustomError("Video with the same title already exists", 400));
 
     const video = new Video({
       userId: req.userData.id,
@@ -93,6 +101,21 @@ export const dislikeVideoController = async (req, res, next) => {
     return res.status(201).json({ message: "The video has been disliked" });
   } catch (error) {
     return next(new CustomError("Fail to dislike a video", 400));
+  }
+};
+
+// GET ALL VIDEOS OF A SINGLE USER
+export const getAllUsersVideos = async (req, res, next) => {
+  const currentUserId = req.userData.id;
+
+  try {
+    const videos = await Video.find({ userId: currentUserId }).populate("userId", "-password");
+
+    if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
+
+    return res.json(videos);
+  } catch (error) {
+    return next(new CustomError("Fail to load user's videos!", 400));
   }
 };
 

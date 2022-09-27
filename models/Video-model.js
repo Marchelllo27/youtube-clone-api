@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const ObjectId = mongoose.ObjectId;
+const { Schema, model } = mongoose;
+const { ObjectId } = Schema.Types;
 
 const options = { timestamps: true, versionKey: false };
 
-const VideoSchema = new mongoose.Schema(
+const VideoSchema = new Schema(
   {
     userId: { type: ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
@@ -19,4 +20,4 @@ const VideoSchema = new mongoose.Schema(
   options
 );
 
-export default mongoose.model("Video", VideoSchema);
+export default model("Video", VideoSchema);

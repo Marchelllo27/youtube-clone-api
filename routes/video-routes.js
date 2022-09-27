@@ -1,4 +1,5 @@
 import { Router } from "express";
+// EXTRA
 import {
   createVideoController,
   getVideoController,
@@ -12,13 +13,15 @@ import {
   searchController,
   likeVideoController,
   dislikeVideoController,
+  getAllUsersVideos,
 } from "../controllers/video-controller.js";
 import checkAuth from "../middlewares/checkAuth.js";
+import { videoUploadValidation } from "../utils/validation/video-validation.js";
 
 const router = Router();
 
 // Create a video
-router.post("/", checkAuth, createVideoController);
+router.post("/", checkAuth, videoUploadValidation, createVideoController);
 
 // Get a video
 router.get("/find/:id", getVideoController);
@@ -36,6 +39,7 @@ router.post("/like/:videoId", checkAuth, likeVideoController);
 router.post("/dislike/:videoId", checkAuth, dislikeVideoController);
 
 // OTHERS
+router.get("/my-videos", checkAuth, getAllUsersVideos);
 router.put("/view/:id", addViewController);
 router.get("/trend", trendVideoController);
 router.get("/random", randomVideoController);
