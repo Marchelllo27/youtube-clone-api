@@ -12,7 +12,7 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     img: { type: String },
     subscribers: { type: Number, default: 0 },
-    subscribedUsers: { type: [ObjectId], default: [] },
+    subscribedUsers: { type: [String], default: [] },
     fromGoogle: { type: Boolean, default: false },
   },
   options

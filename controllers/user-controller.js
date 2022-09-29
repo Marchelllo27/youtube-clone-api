@@ -60,9 +60,9 @@ export const subscribeUserController = async (req, res, next) => {
     userWhichWantSubscribe.save();
 
     // increase subscribers for channel we subscribe to
-    const userWeSubscribeTo = await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: 1 } });
+    await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: 1 } });
 
-    res.json({ message: "Successfully subscribed" });
+    return res.json({ message: "Successfully subscribed" });
   } catch (error) {
     console.log(error);
     return next(new CustomError("Fail to subscribe to the channel"));
@@ -78,16 +78,16 @@ export const unsubscribeUserController = async (req, res, next) => {
     const userNotSubscribedToThisChannel = userWhichWantsUnSubscribe.subscribedUsers.findIndex(
       id => id === req.params.id
     );
-    if (userNotSubscribedToThisChannel < 0) return next(new CustomError("User not subscribed to this channel", 400));
+    if (userNotSubscribedToThisChannel < 0) throw new Error("Fail to unsubscribe");
 
     userWhichWantsUnSubscribe.subscribedUsers.splice(userNotSubscribedToThisChannel, 1);
     userWhichWantsUnSubscribe.save();
 
     const userWeUnsubscribe = await User.findByIdAndUpdate(req.params.id, { $inc: { subscribers: -1 } });
 
-    res.json({ message: "Successfully unsubscribed!" });
+    return res.json({ message: "Successfully unsubscribed!" });
   } catch (error) {
     console.log(error);
-    return next(new CustomError("Fail to unsubscribe to the channel"));
+    return next(new CustomError("Fail to unsubscribe from the channel"));
   }
 };

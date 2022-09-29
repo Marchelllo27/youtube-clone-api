@@ -33,10 +33,10 @@ export const createVideoController = async (req, res, next) => {
 // GET
 export const getVideoController = async (req, res, next) => {
   try {
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findById(req.params.id).populate("userId", "-password");
     if (!video) throw new Error("Error");
 
-    res.json(video);
+    return res.json(video);
   } catch (error) {
     return next(new CustomError("Couldn't find video", 404));
   }
@@ -138,6 +138,11 @@ export const addViewController = async (req, res, next) => {
 export const randomVideoController = async (req, res, next) => {
   try {
     const videos = await Video.aggregate([{ $sample: { size: 40 } }]);
+
+    if (!videos.length) {
+      throw new Error("No Videos found.");
+    }
+
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos", 400));
@@ -172,7 +177,7 @@ export const getByTagController = async (req, res, next) => {
 
   try {
     const videos = await Video.find({ tags: { $in: tags } }).limit(20);
-    res.json(videos);
+    return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos by tags", 404));
   }
@@ -183,7 +188,7 @@ export const searchController = async (req, res, next) => {
 
   try {
     const videos = await Video.find({ title: { $regex: query, $options: "i" } }).limit(40);
-    res.json(videos);
+    return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos by tags", 404));
   }
