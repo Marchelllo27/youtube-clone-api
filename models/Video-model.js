@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const { Schema, model } = mongoose;
-const { ObjectId } = Schema.Types;
+const { Schema, model, Types } = mongoose;
+const { ObjectId } = Types;
 
 const options = { timestamps: true, versionKey: false };
 

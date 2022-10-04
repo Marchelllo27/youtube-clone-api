@@ -1,4 +1,3 @@
-import { response } from "express";
 import { validationResult } from "express-validator";
 // EXTRA
 import CustomError from "../models/CustomError.js";
@@ -50,7 +49,7 @@ export const updateVideoController = async (req, res, next) => {
     if (video.userId !== req.userData.id) return next(new CustomError("Not Authorized, to update this video", 403));
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-    res.json(updatedVideo);
+    return res.json(updatedVideo);
   } catch (error) {
     return next(new CustomError("Couldn't update the video"));
   }
@@ -139,20 +138,25 @@ export const randomVideoController = async (req, res, next) => {
   try {
     const videos = await Video.aggregate([{ $sample: { size: 40 } }]);
 
+    await User.populate(videos, { path: "userId", select: { name: 1, img: 1 } });
+
     if (!videos.length) {
       throw new Error("No Videos found.");
     }
 
     return res.json(videos);
   } catch (error) {
+    console.log(error);
     return next(new CustomError("Couldn't find videos", 400));
   }
 };
 
 // TREND
 export const trendVideoController = async (req, res, next) => {
+  const amount = req.query.quantity;
+
   try {
-    const videos = await Video.find().sort({ views: -1 });
+    const videos = await Video.find().sort({ views: -1 }).limit(amount).populate("userId", "name image");
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos", 400));

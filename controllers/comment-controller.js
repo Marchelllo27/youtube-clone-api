@@ -1,9 +1,16 @@
+import { validationResult } from "express-validator";
+// EXTRA
 import Comment from "../models/Comment-model.js";
 import Video from "../models/Video-model.js";
 import CustomError from "../models/CustomError.js";
 
 // ADD COMMENT
 export const addCommentController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const newComment = new Comment({
       userId: req.userData.id,
@@ -23,11 +30,9 @@ export const getAllCommentsController = async (req, res, next) => {
   try {
     const allComments = await Comment.find({ videoId: req.params.videoId });
 
-    if (!allComments) return next(new CustomError("Couldn't find any comments", 404));
-
     return res.json(allComments);
   } catch (error) {
-    return next(new CustomError("Couldn't fetch the comments", 400));
+    return next(new CustomError("Couldn't fetch the comments. Sorry :(", 400));
   }
 };
 
