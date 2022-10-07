@@ -43,7 +43,7 @@ router.get("/my-videos", checkAuth, getAllUsersVideos);
 router.put("/view/:id", addViewController);
 router.get("/trend", trendVideoController);
 router.get("/random", randomVideoController);
-router.put("/sub", checkAuth, subscribedVideosController);
+router.get("/sub", checkAuth, subscribedVideosController);
 router.get("/tags", getByTagController);
 router.get("/search", searchController);
 

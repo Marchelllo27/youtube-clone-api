@@ -87,7 +87,7 @@ export const unsubscribeUserController = async (req, res, next) => {
 
     return res.json({ message: "Successfully unsubscribed!" });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     return next(new CustomError("Fail to unsubscribe from the channel"));
   }
 };

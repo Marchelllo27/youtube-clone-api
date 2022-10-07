@@ -28,7 +28,9 @@ export const addCommentController = async (req, res, next) => {
 // GET ALL COMMENTS
 export const getAllCommentsController = async (req, res, next) => {
   try {
-    const allComments = await Comment.find({ videoId: req.params.videoId });
+    const allComments = await Comment.find({ videoId: req.params.videoId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "name img");
 
     return res.json(allComments);
   } catch (error) {

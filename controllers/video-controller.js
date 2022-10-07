@@ -108,7 +108,7 @@ export const getAllUsersVideos = async (req, res, next) => {
   const currentUserId = req.userData.id;
 
   try {
-    const videos = await Video.find({ userId: currentUserId }).populate("userId", "-password");
+    const videos = await Video.find({ userId: currentUserId }).sort({ createdAt: -1 }).populate("userId", "-password");
 
     if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
 
@@ -156,7 +156,7 @@ export const trendVideoController = async (req, res, next) => {
   const amount = req.query.quantity;
 
   try {
-    const videos = await Video.find().sort({ views: -1 }).limit(amount).populate("userId", "name image");
+    const videos = await Video.find().sort({ views: -1 }).limit(amount).populate("userId", "name img");
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos", 400));
@@ -169,9 +169,11 @@ export const subscribedVideosController = async (req, res, next) => {
 
   const subscribedChannels = user.subscribedUsers;
 
-  const list = await Promise.all(subscribedChannels.map(channelId => Video.find({ userId: channelId })));
+  const list = await Promise.all(
+    subscribedChannels.map(channelId => Video.find({ userId: channelId }).populate("userId", "name img"))
+  );
 
-  res.json(list.flat().sort((a, b) => b.createdAt - a.createdAt));
+  return res.json(list.flat().sort((a, b) => b.createdAt - a.createdAt));
 };
 
 // GET BY TAG
