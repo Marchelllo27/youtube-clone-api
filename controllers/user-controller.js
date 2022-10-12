@@ -51,7 +51,9 @@ export const subscribeUserController = async (req, res, next) => {
   try {
     const userWhichWantSubscribe = await User.findById(req.userData.id);
 
-    if (!userWhichWantSubscribe) return next(new CustomError("Fail to subscribe this user"));
+    if (req.userData.id === req.params.id) {
+      return next(new CustomError("You can't subscribe to your own channel.", 400));
+    }
 
     const isAlreadySubscribedToThisChannel = userWhichWantSubscribe.subscribedUsers.includes(req.params.id);
     if (isAlreadySubscribedToThisChannel) return next(new CustomError("Already subscribed to this channel", 400));

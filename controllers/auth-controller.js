@@ -84,19 +84,17 @@ export const googleSignupController = async (req, res, next) => {
       const { password, ...userWithoutPassword } = user;
 
       return res.json({
-        user: { ...userWithoutPassword },
-        token,
+        user: { token, ...userWithoutPassword },
       });
     }
 
     // CREATE NEW USER
     const newUser = await User.create({ ...req.body, fromGoogle: true });
 
-    const { password, ...userWithoutPassword } = newUser;
+    const token = generateToken(user._id);
 
     return res.json({
-      user: { ...userWithoutPassword },
-      token,
+      user: { token, newUser },
     });
   } catch (error) {
     console.log(error);
