@@ -14,6 +14,7 @@ import {
   likeVideoController,
   dislikeVideoController,
   getAllUsersVideos,
+  getAllVideosByUserId,
 } from "../controllers/video-controller.js";
 import checkAuth from "../middlewares/checkAuth.js";
 import { videoUploadValidation } from "../utils/validation/video-validation.js";
@@ -25,6 +26,10 @@ router.post("/", checkAuth, videoUploadValidation, createVideoController);
 
 // Get a video
 router.get("/find/:id", getVideoController);
+
+// Get all videos by user id
+
+router.get("/find/all/:id", getAllVideosByUserId);
 
 // Update a video
 router.put("/:id", checkAuth, updateVideoController);

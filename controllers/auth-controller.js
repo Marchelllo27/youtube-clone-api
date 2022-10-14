@@ -48,7 +48,7 @@ export const loginController = async (req, res, next) => {
   // check if user exists
   let existingUser;
   try {
-    existingUser = await User.findOne({ name: req.body.name });
+    existingUser = await User.findOne({ name: req.body.name }).populate("subscribedUsers", "name img");
     if (!existingUser) {
       return next(new CustomError("Invalid credentials. Please try again", 401));
     }

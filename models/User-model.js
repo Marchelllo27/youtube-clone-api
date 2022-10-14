@@ -11,7 +11,7 @@ const UserSchema = new Schema(
     password: { type: String },
     img: { type: String },
     subscribers: { type: Number, default: 0 },
-    subscribedUsers: { type: [String], default: [] },
+    subscribedUsers: { type: [{ type: String, ref: "User" }], default: [] },
     fromGoogle: { type: Boolean, default: false },
   },
   options

@@ -103,12 +103,27 @@ export const dislikeVideoController = async (req, res, next) => {
   }
 };
 
-// GET ALL VIDEOS OF A SINGLE USER
+// GET ALL VIDEOS OF A CURRENT USER
 export const getAllUsersVideos = async (req, res, next) => {
   const currentUserId = req.userData.id;
 
   try {
     const videos = await Video.find({ userId: currentUserId }).sort({ createdAt: -1 }).populate("userId", "-password");
+
+    if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
+
+    return res.json(videos);
+  } catch (error) {
+    return next(new CustomError("Fail to load user's videos!", 400));
+  }
+};
+
+// GET ALL VIDEOS OF A USER BY HIS ID
+export const getAllVideosByUserId = async (req, res, next) => {
+  const userId = req.params.id;
+
+  try {
+    const videos = await Video.find({ userId: userId }).sort({ createdAt: -1 }).populate("userId", "-password");
 
     if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
 
