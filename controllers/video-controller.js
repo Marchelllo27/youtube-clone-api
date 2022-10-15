@@ -110,8 +110,6 @@ export const getAllUsersVideos = async (req, res, next) => {
   try {
     const videos = await Video.find({ userId: currentUserId }).sort({ createdAt: -1 }).populate("userId", "-password");
 
-    if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
-
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Fail to load user's videos!", 400));

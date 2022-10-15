@@ -77,7 +77,7 @@ export const loginController = async (req, res, next) => {
 export const googleSignupController = async (req, res, next) => {
   try {
     // IF USER EXISTS ALREADY
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email }).populate("subscribedUsers", "name img");
     if (user) {
       // login user with JWT
       const token = generateToken(user._id);
