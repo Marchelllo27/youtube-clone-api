@@ -123,8 +123,6 @@ export const getAllVideosByUserId = async (req, res, next) => {
   try {
     const videos = await Video.find({ userId: userId }).sort({ createdAt: -1 }).populate("userId", "-password");
 
-    if (!videos || !videos.length) return next(new CustomError("No videos found", 404));
-
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Fail to load user's videos!", 400));
@@ -152,10 +150,6 @@ export const randomVideoController = async (req, res, next) => {
     const videos = await Video.aggregate([{ $sample: { size: 40 } }]);
 
     await User.populate(videos, { path: "userId", select: { name: 1, img: 1 } });
-
-    if (!videos.length) {
-      throw new Error("No Videos found.");
-    }
 
     return res.json(videos);
   } catch (error) {
