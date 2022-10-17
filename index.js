@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors"; 
+import cors from "cors";
 // My imports
 import userRoutes from "./routes/user-routes.js";
 import videoRoutes from "./routes/video-routes.js";
@@ -28,7 +28,7 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/comments", commentRoutes);
 
 // NOT FOUND PAGE
-app.use((req, res) => res.status(404).json({ message: "Unfortunately page not found" }));
+app.use((req, res) => res.status(404).json({ message: "Unfortunately page not found :(" }));
 
 // ERROR HANDLING
 app.use(errorHandlerMiddleware);
