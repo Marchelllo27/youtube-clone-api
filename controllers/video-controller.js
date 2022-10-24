@@ -196,11 +196,22 @@ export const getByTagController = async (req, res, next) => {
   }
 };
 
+// SEARCH
+
 export const searchController = async (req, res, next) => {
   const query = req.query.q;
 
+  let videos;
   try {
-    const videos = await Video.find({ title: { $regex: query, $options: "i" } }).limit(40);
+    if (query === "null") {
+      videos = await Video.aggregate([{ $sample: { size: 40 } }]);
+      await User.populate(videos, { path: "userId", select: { name: 1, img: 1 } });
+    } else {
+      videos = await Video.find({ title: { $regex: query, $options: "i" } })
+        .populate("userId", "name img")
+        .limit(40);
+    }
+
     return res.json(videos);
   } catch (error) {
     return next(new CustomError("Couldn't find videos by tags", 404));
